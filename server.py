@@ -17,10 +17,10 @@ CLIENT_SECRET = os.environ['CLIENT_SECRET']
 if 'PORT' in os.environ:
 	PORT = os.environ['PORT']
 else:
-	PORT = 2587
+	PORT = 5000
 
 # Remember to register redirect URIs with the appropriate app on your developer dashboard here: https://apps.clever.com/partner/applications/
-# If using the default PORT set above, make sure to register "http://localhost:2587/oauth"
+# If using the default PORT set above, make sure to register "http://localhost:5000/oauth"
 
 REDIRECT_URI = 'https://damp-caverns-13079.herokuapp.com/oauth'
 CLEVER_OAUTH_URL = 'https://clever.com/oauth/tokens'
