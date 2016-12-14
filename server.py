@@ -56,7 +56,7 @@ def index():
 # Then the session state is saved, and the user is redirected to the application
 
 @route('/oauth')
-def oauth(environ):
+def oauth():
     code = request.query.code
 
     payload = {
