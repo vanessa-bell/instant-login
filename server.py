@@ -66,59 +66,62 @@ def index():
 
 @route('/oauth')
 def oauth():
-    code = request.query.code
-
-    payload = {
-        'code': code,
-        'grant_type': 'authorization_code',
-        'redirect_uri': REDIRECT_URI
-    }
-
-    headers = {
-        'Authorization': 'Basic {base64string}'.format(base64string=base64.b64encode(CLIENT_ID + ':' + CLIENT_SECRET)), 'Content-Type': 'application/json'
-    }
-
-# Don't forget to handle 4xx and 5xx errors!
-    response = requests.post(CLEVER_OAUTH_URL, data=json.dumps(payload), headers=headers).json()
-    token = response['access_token']
-
-    bearer_headers = {
-        'Authorization': 'Bearer {token}'.format(token=token)
-    }
-
-# Don't forget to handle 4xx and 5xx errors!
-    result = requests.get(CLEVER_API_BASE + '/me', headers=bearer_headers).json()
-    data = result['data']
-
-# Only handle student and teacher logins for our app (other types include districts)
-    if data['type'] == 'district_admin':
-        return template("Sorry, you must be a student or teacher to log in to this app but you are a district administrator.")
+    if not request.query.code:
+        redirect('/')
     else:
-        if 'name' in data: #SIS scope
-            nameObject = data['name']
+        code = request.query.code
 
-        if data['type'] == 'teacher':
-            teacherId = data['id']
-            teacher = requests.get(CLEVER_API_BASE + '/v1.1/teachers/{teacherId}'.format(teacherId=teacherId),
-                                   headers=bearer_headers).json()
+        payload = {
+            'code': code,
+            'grant_type': 'authorization_code',
+            'redirect_uri': REDIRECT_URI
+        }
 
-            nameObject = teacher['data']['name']
+        headers = {
+            'Authorization': 'Basic {base64string}'.format(base64string=base64.b64encode(CLIENT_ID + ':' + CLIENT_SECRET)), 'Content-Type': 'application/json'
+        }
+
+    # Don't forget to handle 4xx and 5xx errors!
+        response = requests.post(CLEVER_OAUTH_URL, data=json.dumps(payload), headers=headers).json()
+        token = response['access_token']
+
+        bearer_headers = {
+            'Authorization': 'Bearer {token}'.format(token=token)
+        }
+
+    # Don't forget to handle 4xx and 5xx errors!
+        result = requests.get(CLEVER_API_BASE + '/me', headers=bearer_headers).json()
+        data = result['data']
+
+    # Only handle student and teacher logins for our app (other types include districts)
+        if data['type'] == 'district_admin':
+            return template("Sorry, you must be a student or teacher to log in to this app but you are a district administrator.")
+        else:
+            if 'name' in data: #SIS scope
+                nameObject = data['name']
+
+            if data['type'] == 'teacher':
+                teacherId = data['id']
+                teacher = requests.get(CLEVER_API_BASE + '/v1.1/teachers/{teacherId}'.format(teacherId=teacherId),
+                                       headers=bearer_headers).json()
+
+                nameObject = teacher['data']['name']
+
+                request.session['nameObject'] = nameObject
+                request.session['type'] = data['type']
+
+                redirect('/app')
+
+            else:
+                studentId = data['id']
+                student = requests.get(CLEVER_API_BASE + '/v1.1/students/{studentId}'.format(studentId=studentId),
+                                       headers=bearer_headers).json()
+                nameObject = student['data']['name']
 
             request.session['nameObject'] = nameObject
             request.session['type'] = data['type']
 
             redirect('/app')
-
-        else:
-            studentId = data['id']
-            student = requests.get(CLEVER_API_BASE + '/v1.1/students/{studentId}'.format(studentId=studentId),
-                                   headers=bearer_headers).json()
-            nameObject = student['data']['name']
-
-        request.session['nameObject'] = nameObject
-        request.session['type'] = data['type']
-
-        redirect('/app')
 
 @route('/app')
 def app():
