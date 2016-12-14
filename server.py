@@ -97,7 +97,7 @@ def oauth():
         	nameObject = teacher['data']['name']
 
         	session = request.environ.get('beaker.session')
-            print('session',session)
+            print('session', session)
         	session['nameObject'] = nameObject
         	session['type'] = data['type']
 
