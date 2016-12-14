@@ -40,7 +40,7 @@ MYAPP = SessionMiddleware(app(), SESSION_OPTS)
 
 @hook('before_request')
 def setup_request():
-    request.session = request.environ['beaker.session']
+    request.session = request.environ.get('beaker.session')
 
  ################################## ROUTES ##################################
 
