@@ -56,7 +56,7 @@ def index():
 # Then the session state is saved, and the user is redirected to the application
 
 @route('/oauth')
-def oauth():
+def oauth(environ):
     code = request.query.code
 
     payload = {
@@ -96,7 +96,7 @@ def oauth():
 
         	nameObject = teacher['data']['name']
 
-        	session = request.environ.get('beaker.session')
+        	session = environ('beaker.session')
         	session['nameObject'] = nameObject
         	session['type'] = data['type']
 
@@ -111,7 +111,7 @@ def oauth():
             nameObject = student['data']['name']
 
         
-        session = request.environ.get('beaker.session')
+        session = environ('beaker.session')
         session['nameObject'] = nameObject
         session['type'] = data['type']
 
