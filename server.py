@@ -7,6 +7,7 @@ import json
 import os
 import urllib
 import requests
+import bottle
 
 from bottle import app, redirect, request, route, hook, run, template
 from beaker.middleware import SessionMiddleware
