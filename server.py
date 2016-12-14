@@ -22,7 +22,7 @@ else:
 # Remember to register redirect URIs with the appropriate app on your developer dashboard here: https://apps.clever.com/partner/applications/
 # If using the default PORT set above, make sure to register "http://localhost:2587/oauth"
 
-REDIRECT_URI = 'http://localhost:{port}/oauth'.format(port=PORT)
+REDIRECT_URI = 'https://damp-caverns-13079.herokuapp.com/oauth'
 CLEVER_OAUTH_URL = 'https://clever.com/oauth/tokens'
 CLEVER_API_BASE = 'https://api.clever.com'
 
