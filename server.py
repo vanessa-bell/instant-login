@@ -58,6 +58,7 @@ def index():
 @route('/oauth')
 def oauth():
     code = request.query.code
+    session = {}
 
     payload = {
         'code': code,
@@ -101,7 +102,7 @@ def oauth():
         	session['type'] = data['type']
 
         	redirect('/app')
-            
+
         else:
 
             studentId = data['id']
