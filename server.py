@@ -96,7 +96,6 @@ def oauth():
         	teacher = requests.get(CLEVER_API_BASE + '/v1.1/teachers/{teacherId}'.format(teacherId=teacherId), headers=bearer_headers).json()
 
         	nameObject = teacher['data']['name']
-
             session = {}
         	session = request.environ.get('beaker.session')
         	session['nameObject'] = nameObject
