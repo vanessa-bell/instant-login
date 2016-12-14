@@ -1,6 +1,6 @@
 <h1>Clever Instant Login Demo</h1>
 
-<p>This app demonstrates how to use OAuth to implement Clever Instant Login. It also demonstrates the result of the '/me' Clever API endpoint.</p>
+<p>This app demonstrates how to use OAuth to implement <a href='https://dev.clever.com/instant-login/'>Clever Instant Login</a>. It also demonstrates the result of the <a href='https://clever.com/developers/docs/explorer#endpoint_identity_token'>/me' Clever API endpoint</a>.</p>
 
 <h3>Instructions:</h3>
 
