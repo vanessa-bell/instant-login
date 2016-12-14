@@ -8,7 +8,7 @@ import os
 import urllib
 import requests
 
-from bottle import app, redirect, request, route, run, template
+from bottle import app, redirect, request, route, hook, run, template
 from beaker.middleware import SessionMiddleware
 
 # Use your Client ID and secret from the app in your Clever developer dashboard:
@@ -33,9 +33,14 @@ CLEVER_API_BASE = 'https://api.clever.com'
 SESSION_OPTS = {
     'session.type': 'memory',
     'session.cookie_expires': 300,
+    'session.data_dir': './session/',
     'session.auto': True
 }
 MYAPP = SessionMiddleware(app(), SESSION_OPTS)
+
+@hook('before_request')
+def setup_request():
+    request.session = request.environ['beaker.session']
 
  ################################## ROUTES ##################################
 
@@ -98,10 +103,8 @@ def oauth():
 
             nameObject = teacher['data']['name']
 
-            session = {}
-            session = request.environ.get('beaker.session')
-            session['nameObject'] = nameObject
-            session['type'] = data['type']
+            request.session['nameObject'] = nameObject
+            request.session['type'] = data['type']
 
             redirect('/app')
 
@@ -111,19 +114,17 @@ def oauth():
                                    headers=bearer_headers).json()
             nameObject = student['data']['name']
 
-        session = request.environ.get('beaker.session')
-        session['nameObject'] = nameObject
-        session['type'] = data['type']
+        request.session['nameObject'] = nameObject
+        request.session['type'] = data['type']
 
         redirect('/app')
 
 @route('/app')
 def app():
     """ app logic -- only for users who've been authenticated and identified"""
-    session = request.environ.get('beaker.session')
-    if 'nameObject' in session:
-        nameObject = session['nameObject']
-        userType = session['type']
+    if 'nameObject' in request.session:
+        nameObject = request.session['nameObject']
+        userType = request.session['type']
         return template("You are now logged in as {{name}}. You are a {{type}}. Click <a href='/logout'>here</a> to logout", name=nameObject['first'] + ' ' + nameObject['middle'] + ' ' + nameObject['last'], type=userType)
     else:
         return "You must be logged in to see this page. Click <a href='/'>here</a> to log in."
@@ -131,11 +132,10 @@ def app():
 @route('/logout')
 def logout():
     """ simple logout route """
-    session = request.environ.get('beaker.session')
-    if not session:
+    if not request.session:
         redirect('/')
     else:
-        session.delete()
+        request.session.delete()
         redirect('/')
 
 
